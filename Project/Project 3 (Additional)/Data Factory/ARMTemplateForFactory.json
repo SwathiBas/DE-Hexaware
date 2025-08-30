@@ -1,0 +1,636 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "syndatafactory"
+        },
+        "ls_blob_storage_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'ls_blob_storage'"
+        },
+        "ls_synapse_dw_password": {
+            "type": "secureString",
+            "metadata": "Secure string for 'password' of 'ls_synapse_dw'"
+        },
+        "ls_synapse_dw_properties_typeProperties_server": {
+            "type": "string",
+            "defaultValue": "synapseanalprojectws.sql.azuresynapse.net"
+        },
+        "ls_synapse_dw_properties_typeProperties_database": {
+            "type": "string",
+            "defaultValue": "dwpool"
+        },
+        "ls_synapse_dw_properties_typeProperties_userName": {
+            "type": "string",
+            "defaultValue": "sqladminuser"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/PL_Load_Staging')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Copy_Customers_to_Staging",
+                        "type": "Copy",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "0.12:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "DelimitedTextSource",
+                                "storeSettings": {
+                                    "type": "AzureBlobStorageReadSettings",
+                                    "recursive": true,
+                                    "enablePartitionDiscovery": false
+                                },
+                                "formatSettings": {
+                                    "type": "DelimitedTextReadSettings"
+                                }
+                            },
+                            "sink": {
+                                "type": "SqlDWSink",
+                                "allowCopyCommand": true,
+                                "copyCommandSettings": {}
+                            },
+                            "enableStaging": false,
+                            "translator": {
+                                "type": "TabularTranslator",
+                                "mappings": [
+                                    {
+                                        "source": {
+                                            "name": "CustomerID",
+                                            "type": "String"
+                                        },
+                                        "sink": {
+                                            "name": "CustomerID",
+                                            "type": "Int32"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "CustomerName",
+                                            "type": "String"
+                                        },
+                                        "sink": {
+                                            "name": "CustomerName",
+                                            "type": "String"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "Email",
+                                            "type": "String"
+                                        },
+                                        "sink": {
+                                            "name": "Email",
+                                            "type": "String"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "City",
+                                            "type": "String"
+                                        },
+                                        "sink": {
+                                            "name": "City",
+                                            "type": "String"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "State",
+                                            "type": "String"
+                                        },
+                                        "sink": {
+                                            "name": "State",
+                                            "type": "String"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "Country",
+                                            "type": "String"
+                                        },
+                                        "sink": {
+                                            "name": "Country",
+                                            "type": "String"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "inputs": [
+                            {
+                                "referenceName": "ds_raw_customers",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "referenceName": "ds_dw_customers",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Copy_Products_to_Staging",
+                        "type": "Copy",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "0.12:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "DelimitedTextSource",
+                                "storeSettings": {
+                                    "type": "AzureBlobStorageReadSettings",
+                                    "recursive": true,
+                                    "enablePartitionDiscovery": false
+                                },
+                                "formatSettings": {
+                                    "type": "DelimitedTextReadSettings"
+                                }
+                            },
+                            "sink": {
+                                "type": "SqlDWSink",
+                                "allowCopyCommand": true,
+                                "copyCommandSettings": {}
+                            },
+                            "enableStaging": false,
+                            "translator": {
+                                "type": "TabularTranslator",
+                                "mappings": [
+                                    {
+                                        "source": {
+                                            "name": "ProductID",
+                                            "type": "String"
+                                        },
+                                        "sink": {
+                                            "name": "ProductID",
+                                            "type": "Int32"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "ProductName",
+                                            "type": "String"
+                                        },
+                                        "sink": {
+                                            "name": "ProductName",
+                                            "type": "String"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "Category",
+                                            "type": "String"
+                                        },
+                                        "sink": {
+                                            "name": "Category",
+                                            "type": "String"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "UnitPrice",
+                                            "type": "String"
+                                        },
+                                        "sink": {
+                                            "name": "UnitPrice",
+                                            "type": "Decimal"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "inputs": [
+                            {
+                                "referenceName": "ds_raw_products",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "referenceName": "ds_dw_products",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Copy_Sales_to_Staging",
+                        "type": "Copy",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "0.12:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "DelimitedTextSource",
+                                "storeSettings": {
+                                    "type": "AzureBlobStorageReadSettings",
+                                    "recursive": true,
+                                    "enablePartitionDiscovery": false
+                                },
+                                "formatSettings": {
+                                    "type": "DelimitedTextReadSettings"
+                                }
+                            },
+                            "sink": {
+                                "type": "SqlDWSink",
+                                "allowCopyCommand": true,
+                                "copyCommandSettings": {}
+                            },
+                            "enableStaging": false,
+                            "translator": {
+                                "type": "TabularTranslator",
+                                "mappings": [
+                                    {
+                                        "source": {
+                                            "name": "SaleID",
+                                            "type": "String"
+                                        },
+                                        "sink": {
+                                            "name": "SaleID",
+                                            "type": "Int32"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "SaleDate",
+                                            "type": "String"
+                                        },
+                                        "sink": {
+                                            "name": "SaleDate",
+                                            "type": "DateTime"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "CustomerID",
+                                            "type": "String"
+                                        },
+                                        "sink": {
+                                            "name": "CustomerID",
+                                            "type": "Int32"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "ProductID",
+                                            "type": "String"
+                                        },
+                                        "sink": {
+                                            "name": "ProductID",
+                                            "type": "Int32"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "Quantity",
+                                            "type": "String"
+                                        },
+                                        "sink": {
+                                            "name": "Quantity",
+                                            "type": "Int32"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "UnitPrice",
+                                            "type": "String"
+                                        },
+                                        "sink": {
+                                            "name": "UnitPrice",
+                                            "type": "Decimal"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "Amount",
+                                            "type": "String"
+                                        },
+                                        "sink": {
+                                            "name": "Amount",
+                                            "type": "Decimal"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "inputs": [
+                            {
+                                "referenceName": "ds_raw_sales",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "referenceName": "ds_dw_sales",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            }
+                        ]
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "annotations": []
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/datasets/ds_raw_customers')]",
+                "[concat(variables('factoryId'), '/datasets/ds_dw_customers')]",
+                "[concat(variables('factoryId'), '/datasets/ds_raw_products')]",
+                "[concat(variables('factoryId'), '/datasets/ds_dw_products')]",
+                "[concat(variables('factoryId'), '/datasets/ds_raw_sales')]",
+                "[concat(variables('factoryId'), '/datasets/ds_dw_sales')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ds_dw_customers')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "ls_synapse_dw",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [],
+                "typeProperties": {
+                    "schema": "stg",
+                    "table": "Customers"
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/ls_synapse_dw')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ds_dw_products')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "ls_synapse_dw",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [],
+                "typeProperties": {
+                    "schema": "stg",
+                    "table": "Products"
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/ls_synapse_dw')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ds_dw_sales')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "ls_synapse_dw",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [],
+                "typeProperties": {
+                    "schema": "stg",
+                    "table": "Sales"
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/ls_synapse_dw')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ds_raw_customers')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "ls_blob_storage",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "fileName": "customers.csv",
+                        "folderPath": "raw",
+                        "container": "datalake"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\"",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "CustomerID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CustomerName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Email",
+                        "type": "String"
+                    },
+                    {
+                        "name": "City",
+                        "type": "String"
+                    },
+                    {
+                        "name": "State",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Country",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/ls_blob_storage')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ds_raw_products')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "ls_blob_storage",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "fileName": "products.csv",
+                        "folderPath": "raw",
+                        "container": "datalake"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\"",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "ProductID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ProductName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Category",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UnitPrice",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/ls_blob_storage')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ds_raw_sales')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "ls_blob_storage",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "fileName": "sales.csv",
+                        "folderPath": "raw",
+                        "container": "datalake"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\"",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "SaleID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SaleDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CustomerID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ProductID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Quantity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UnitPrice",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Amount",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/ls_blob_storage')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ls_blob_storage')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureBlobStorage",
+                "typeProperties": {
+                    "connectionString": "[parameters('ls_blob_storage_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ls_synapse_dw')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureSqlDW",
+                "typeProperties": {
+                    "server": "[parameters('ls_synapse_dw_properties_typeProperties_server')]",
+                    "database": "[parameters('ls_synapse_dw_properties_typeProperties_database')]",
+                    "encrypt": "mandatory",
+                    "trustServerCertificate": false,
+                    "authenticationType": "SQL",
+                    "userName": "[parameters('ls_synapse_dw_properties_typeProperties_userName')]",
+                    "password": {
+                        "type": "SecureString",
+                        "value": "[parameters('ls_synapse_dw_password')]"
+                    }
+                }
+            },
+            "dependsOn": []
+        }
+    ]
+}

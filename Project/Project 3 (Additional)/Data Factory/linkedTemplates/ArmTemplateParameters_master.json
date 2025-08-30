@@ -1,0 +1,30 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "value": "syndatafactory"
+        },
+        "ls_blob_storage_connectionString": {
+            "value": ""
+        },
+        "ls_synapse_dw_password": {
+            "value": ""
+        },
+        "ls_synapse_dw_properties_typeProperties_server": {
+            "value": "synapseanalprojectws.sql.azuresynapse.net"
+        },
+        "ls_synapse_dw_properties_typeProperties_database": {
+            "value": "dwpool"
+        },
+        "ls_synapse_dw_properties_typeProperties_userName": {
+            "value": "sqladminuser"
+        },
+        "containerUri": {
+            "value": ""
+        },
+        "containerSasToken": {
+            "value": ""
+        }
+    }
+}

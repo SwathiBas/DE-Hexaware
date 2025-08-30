@@ -1,0 +1,19 @@
+trigger:
+  branches:
+    include:
+    - adf_publish
+pool:
+  name: 'Default'
+stages:
+- stage: Build
+  jobs:
+  - job: BuildArtifacts
+    steps:
+    - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
+      inputs:
+        repository: self
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.SourcesDirectory)'
+        ArtifactName: 'adf_arm_templates'
+
